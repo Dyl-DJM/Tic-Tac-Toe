@@ -32,9 +32,9 @@ function Board({ xIsNext, squares, onPlay }) {
   for(let i = 0; i < 3; i++) {
     const row = [];
     for(let j = 0; j < 3; j++) {
-      row.push(<Square value={squares[i * 3 + j]} onSquareClick={() => handleClick(i * 3 + j)}></Square>)
+      row.push(<Square key={i + 3 * j} value={squares[i * 3 + j]} onSquareClick={() => handleClick(i * 3 + j)}></Square>)
     }
-    board.push(<div className="board-row">{row}</div>);
+    board.push(<div key={i} className="board-row">{row}</div>);
   }
 
   return (
@@ -51,6 +51,7 @@ export default function Game() {
   const [currentMove, setCurrentMove] = useState(0);
   const xIsNext = currentMove % 2 === 0;
   const currentSquares = history[currentMove];
+  const [isIncreasingOrder, setIsIncreasingOrder] =useState(true);
 
   function handlePlay(nextSquares) {
     const nextHistory = [...history.slice(0, currentMove + 1), nextSquares];
@@ -62,10 +63,14 @@ export default function Game() {
     setCurrentMove(nextMove);
   }
 
+  function switchOrder() {
+    setIsIncreasingOrder(!isIncreasingOrder);
+  }
+
   const moves = history.map((squares, move) => {
     let description;
     if(move === history.length - 1) {
-      return <div>Vous êtes au coup {move}</div>;
+      return <div key={squares.toString()}>Vous êtes au coup {move}</div>;
     }
     if (move > 0){
       description = "Aller au coup #" + move;
@@ -73,7 +78,7 @@ export default function Game() {
       description = "Revenir au début";
     }
     return (
-      <li key={move}>
+      <li key={squares.toString()}>
         <button onClick={() => jumpTo(move)}>{description}</button>
       </li>
     );
@@ -84,7 +89,8 @@ export default function Game() {
         <Board xIsNext={xIsNext} squares = {currentSquares} onPlay = {handlePlay}/>
       </div>
       <div className="game-info">
-        <ol>{moves}</ol>
+        <button onClick={switchOrder}>Change order</button>
+        <ol>{isIncreasingOrder ? moves : moves.reverse()}</ol>
       </div>
     </div>
   );
