@@ -24,9 +24,11 @@ function Board({ xIsNext, squares, onPlay, winningSquares, onWin}) {
   let status;
 
   if (winState) {
-    status = winState.winner + " a gagné";
-  } else {
+    status = winState.winner + " a gagné !";
+  } else if(squares.includes(null)) {
     status = "Prochain tour : " + (xIsNext ? "X" : "O");
+  } else {
+    status = "Match nul !"
   }
 
   useEffect(() => {
