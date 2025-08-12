@@ -132,7 +132,22 @@ export default function Game() {
   );
 }
 
+/**
+ * Determines the winning state of a Tic-Tac-Toe board.
+ *
+ * This function checks all possible winning combinations on the board.
+ * If a winning combination is found, it returns an object containing the
+ * winner symbol ('X' or 'O') and the indices of the winning squares.
+ * If there is no winner, it returns null.
+ * 
+ * @param {string[][]} squaresA flat array of 9 strings representing the game board.
+ * Each string is either 'X', 'O', or null/empty for empty squares.
+ * 
+ * @returns {{ winner: string, squares: number[] } | null} An object containing the winner symbol and 
+ * the winning line, or null if no winner.
+ */
 function calculateWinner(squares) {
+  // All winning lines
   const lines = [
     [0, 1, 2],
     [3, 4, 5],
@@ -145,7 +160,7 @@ function calculateWinner(squares) {
   ];
   for(let i= 0; i < lines.length; i++) {
     const [a, b, c] = lines[i];
-    if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
+    if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) { // The symbols of the winning line are all the same
       return {
         winner: squares[a],
         squares: [a, b, c]
