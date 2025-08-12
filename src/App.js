@@ -1,5 +1,17 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, JSX } from "react";
 
+/**
+ * Renders a single square (cell) that could be within a grid.
+ *
+ * This component displays the current value of the cell and handles click events.
+ * If the cell is part of a winning combination, it receives a specific style.
+ * 
+ * @param {string|number|null} value Content of the cell.
+ * @param {Function} onSquareClick Function to execute when the square is clicked.
+ * @param {boolean} isWinningSquare Indicates whether the cell is part of a winning sequence.
+ * 
+ * @returns {JSX.Element} A styled button element representing a square.
+ */
 function Square({value, onSquareClick, isWinningSquare}) {
   return <button className={`square ${isWinningSquare ? 'winning' : ''}`} onClick={onSquareClick}>
     {value}
