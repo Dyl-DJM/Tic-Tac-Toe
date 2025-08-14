@@ -18,13 +18,33 @@ function Square({value, onSquareClick, isWinningSquare}) {
   </button>;
 }
 
-function Board({ xIsNext, squares, onPlay, winningSquares, onWin}) {
+/**
+ * Builds and renders a 3x3 Tic-Tac-Toe board.
+ * 
+ * @param {boolean} xIsNext Indicates whether it's 'X' turn to play.
+ * @param {(string|null)[]} squares Flat array of 9 squares (indexed from 0 to 8).
+ * @param {Function} onPlay FCallback that handles the game logic when a cell is clicked.
+ * @param {number[]} winningSquares Array that contains the 3 current winning cells, or null if there isn't.
+ * @param {Function} onWin Callback triggered when a winning combination is detected.
+ * 
+ * @returns {JSX.Element} A div containg the whole board (as a 3x3 grid).
+ */
+function Board({xIsNext, squares, onPlay, winningSquares, onWin}) {
+  /**
+   * Handles a click event on a cell in the 3x3 grid.
+   * 
+   * Prevents action if the selected cell is already filled or if a winner has been determined.
+   * If the move is valid, it updates the game state and notifies the parent via the `onPlay` callback.
+   * 
+   * @param {number} i Row index of the cell, from 0 to 2.
+   * @param {number} j Column index of the cell, from 0 to 2.
+   */
   function handleClick(i, j) {
     const index = i * 3 + j;
-    if(squares[index] || calculateWinner(squares)){
+    if(squares[index] || calculateWinner(squares)){ // Do nothing if the cell isn't empty or there's already a winner
       return;
     }
-    const nextSquares = squares.slice();
+    const nextSquares = squares.slice(); // Copy
     if(xIsNext){
       nextSquares[index] = "X";
     }else{
@@ -44,19 +64,21 @@ function Board({ xIsNext, squares, onPlay, winningSquares, onWin}) {
     status = "Match nul !"
   }
 
+  // useEffect triggers onWin only once, when a winner is first detected
   useEffect(() => {
     if (winState && !winningSquares) {
       onWin(winState.squares);
     }
   }, [winState, winningSquares, onWin]);
 
+  // Renders the 3x3 game board with Square components and their current values
   const board = [];
   for(let i = 0; i < 3; i++) {
-    const row = [];
+    const rows = [];
     for(let j = 0; j < 3; j++) {
-      row.push(<Square key={i + 3 * j} value={squares[i * 3 + j]} onSquareClick={() => handleClick(i, j)} isWinningSquare={winningSquares && winningSquares.includes(i * 3 + j)}></Square>)
+      rows.push(<Square key={i + 3 * j} value={squares[i * 3 + j]} onSquareClick={() => handleClick(i, j)} isWinningSquare={winningSquares && winningSquares.includes(i * 3 + j)}></Square>)
     }
-    board.push(<div key={i} className="board-row">{row}</div>);
+    board.push(<div key={i} className="board-row">{rows}</div>);
   }
 
   return (
