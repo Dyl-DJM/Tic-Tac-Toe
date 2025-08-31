@@ -23,7 +23,7 @@ function Square({value, onSquareClick, isWinningSquare}) {
  * 
  * @param {boolean} xIsNext Indicates whether it's 'X' turn to play.
  * @param {(string|null)[]} squares Flat array of 9 squares (indexed from 0 to 8).
- * @param {Function} onPlay FCallback that handles the game logic when a cell is clicked.
+ * @param {Function} onPlay Callback that handles the game logic when a cell is clicked.
  * @param {number[]} winningSquares Array that contains the 3 current winning cells, or null if there isn't.
  * @param {Function} onWin Callback triggered when a winning combination is detected.
  * 
@@ -89,7 +89,14 @@ function Board({xIsNext, squares, onPlay, winningSquares, onWin}) {
   );
 }
 
-
+/**
+ * Handles the whole Tic-Tac-Toe game's logic.
+ * 
+ * It renders a board with cells allowing two players to play turn by turn, and shows the past moves
+ * the players can jump to.
+ * 
+ * @returns {JSX.Element} A div containg the whole board (as a 3x3 grid) and the move history.
+ */
 export default function Game() {
   const [history, setHistory] = useState([Array(9).fill(null)]);
   const [currentMove, setCurrentMove] = useState(0);
@@ -99,6 +106,12 @@ export default function Game() {
   const [winningSquares, setWinningSquares] = useState(null);
   let moveHistory = useRef([]);
 
+  /**
+   * Handles a player's turn in Tic-Tac-Toe.
+   *
+   * @param {(string|null)[]} nextSquares New state of the board's cells.
+   * @param {number[]} moveCoords Coordinates [row, col] of the cell where the player made a move.
+   */
   function handlePlay(nextSquares, moveCoords) {
     const nextHistory = [...history.slice(0, currentMove + 1), nextSquares];
     setHistory(nextHistory);
@@ -106,21 +119,39 @@ export default function Game() {
     moveHistory.current = [...moveHistory.current.slice(0, currentMove), moveCoords];
   }
 
+  /**
+   * Jumps to a specific move in the game's move history.
+   * 
+   * Also resets the current winning state.
+   * 
+   * @param {number} nextMove Index of the move to jump to.
+   */
   function jumpTo(nextMove) {
     setCurrentMove(nextMove);
     setWinningSquares(null);
   }
 
+  /**
+   * Toggles the game's move history order (chronological <-> reverse).
+   */
   function switchOrder() {
     setIsIncreasingOrder(!isIncreasingOrder);
   }
 
+  /**
+   * Sets the winning cells of the board.
+   * 
+   * @param {(string|null)[]} squares Array of cells that make the winning line.
+   */
   function handleWin(squares) {
     setWinningSquares(squares);
   }
 
+  // Builds the list of past moves for the history panel
   const moves = history.map((squares, move) => {
     let description;
+
+    // Special display for the current move
     if(move === history.length - 1) {
       const lastCoords = moveHistory.current.at(-1);
       const coordsTxt = lastCoords ? ` (${lastCoords[0]}, ${lastCoords[1]})` : "";
@@ -130,17 +161,22 @@ export default function Game() {
           </div>
       );
     }
+
+    // Display for previous moves
     if (move > 0){
       description = "Aller au coup #" + move + " (" + moveHistory.current[move - 1] + ")";
     } else {
       description = "Revenir au début";
     }
+
     return (
       <li key={squares.toString()}>
         <button onClick={() => jumpTo(move)}>{description}</button>
       </li>
     );
   });
+
+  // Render the whole Tic-Tac-Toe game with both the board and the move history
   return (
     <div className="game">
       <div className="game-board">
